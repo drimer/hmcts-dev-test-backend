@@ -8,3 +8,23 @@ can run the service in IntelliJ (or your IDE of choice) or however you normally 
 
 There is an example endpoint provided to retrieve an example of a case. You are free to add/remove fields as you
 wish.
+
+
+# Local Dev setup
+
+1. Spin up a Postgres DB:
+
+```bash
+docker run --name hmcts-local-postgres -e POSTGRES_DB=testdb -e POSTGRES_USER=testuser -e POSTGRES_PASSWORD=secretpass -p 5432:5432 -d postgres
+```
+
+2. Ensure you're setting the following environment variables when you're about to run the server:
+
+```bash
+DB_HOST=http://localhost
+DB_PORT=5432
+DB_NAME=testdb
+DB_OPTIONS=
+DB_USER_NAME=testuser
+DB_PASSWORD=secretpass
+```
