@@ -46,4 +46,17 @@ public class TaskControllerTest {
         assertTrue(response.getId() > 0);
     }
 
+    @Test
+    void testThatGetTaskByIdReturnsTask() {
+        var task = new Task()
+            .setId(1)
+            .setTitle("Test Task");
+        when(tasksRepository.getTaskById(1)).thenReturn(task);
+
+        var response = sut.getTaskById(1);
+
+        assertEquals(response.getTitle(), task.getTitle());
+        assertEquals(response.getId(), task.getId());
+    }
+
 }
