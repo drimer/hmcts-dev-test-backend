@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import uk.gov.hmcts.reform.dev.dto.TaskCreateRequestDto;
 import uk.gov.hmcts.reform.dev.dto.TaskResponseDto;
+import uk.gov.hmcts.reform.dev.dto.TaskUpdateRequestDto;
 import uk.gov.hmcts.reform.dev.models.Task;
 import uk.gov.hmcts.reform.dev.repositories.TasksRepository;
 
 import org.springframework.data.util.StreamUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -62,6 +64,20 @@ public class TaskController {
         
         var modelMapper = new ModelMapper();
         return StreamSupport.stream(tasks.spliterator(), false).map(task -> modelMapper.map(task, TaskResponseDto.class)).toList();
+    }
+
+    @PatchMapping("/tasks/{id}")
+    public TaskResponseDto updateTask(@PathVariable("id") int id, @Valid @RequestBody TaskUpdateRequestDto taskUpdateRequestDto) {
+        var task = tasksRepository.getTaskById(id);
+        if (task == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        var modelMapper = new ModelMapper();
+        modelMapper.map(taskUpdateRequestDto, task);
+        tasksRepository.save(task);
+
+        return modelMapper.map(task, TaskResponseDto.class);
     }
     
 }

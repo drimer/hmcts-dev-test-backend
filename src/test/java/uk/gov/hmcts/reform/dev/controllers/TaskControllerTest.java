@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import uk.gov.hmcts.reform.dev.dto.TaskCreateRequestDto;
+import uk.gov.hmcts.reform.dev.dto.TaskUpdateRequestDto;
 import uk.gov.hmcts.reform.dev.models.Task;
 import uk.gov.hmcts.reform.dev.repositories.TasksRepository;
 
@@ -97,6 +98,42 @@ public class TaskControllerTest {
         for (int i = 0; i < response.size(); i++) {
             assertEquals(response.get(i).getId(), tasks.get(i).getId());
         }
+    }
+
+    @Test
+    void testThatGetAllTasksReturnsEmptyList() {
+        when(tasksRepository.findAll()).thenReturn(Collections.emptyList());
+
+        var response = sut.getAllTasks();
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    void testThatUpdateTaskReturnsUpdatedTask() {
+        var task = new Task()
+            .setId(1)
+            .setTitle("Test Task")
+            .setStatus("pending");
+        
+        when(tasksRepository.getTaskById(1)).thenReturn(task);
+        when(tasksRepository.save(any(Task.class))).thenReturn(task);
+
+        var response = sut.updateTask(
+            1, new TaskUpdateRequestDto().setStatus("in_progress"));
+        
+        assertEquals(response.getStatus(), task.getStatus());
+        assertEquals(response.getId(), task.getId());
+    }
+
+    @Test
+    void testThatUpdateTaskThrowsNotFoundException() {
+        when(tasksRepository.getTaskById(1)).thenReturn(null);
+
+        var exception = assertThrows(
+            ResponseStatusException.class,
+            () -> sut.updateTask(1, new TaskUpdateRequestDto().setStatus("in_progress"))
+        );
+        assertEquals(exception.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
 }
