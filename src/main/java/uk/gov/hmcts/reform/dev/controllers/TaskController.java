@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.dev.controllers;
 
+import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,9 +18,12 @@ import uk.gov.hmcts.reform.dev.dto.TaskResponseDto;
 import uk.gov.hmcts.reform.dev.models.Task;
 import uk.gov.hmcts.reform.dev.repositories.TasksRepository;
 
+import org.springframework.data.util.StreamUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -47,6 +54,14 @@ public class TaskController {
 
         var modelMapper = new ModelMapper();
         return modelMapper.map(task, TaskResponseDto.class);
+    }
+
+    @GetMapping("/tasks")
+    public List<TaskResponseDto> getAllTasks() {
+        var tasks = tasksRepository.findAll();
+        
+        var modelMapper = new ModelMapper();
+        return StreamSupport.stream(tasks.spliterator(), false).map(task -> modelMapper.map(task, TaskResponseDto.class)).toList();
     }
     
 }

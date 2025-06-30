@@ -5,6 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import uk.gov.hmcts.reform.dev.dto.TaskCreateRequestDto;
 import uk.gov.hmcts.reform.dev.models.Task;
@@ -12,8 +14,18 @@ import uk.gov.hmcts.reform.dev.repositories.TasksRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.assertj.core.util.Arrays;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -57,6 +69,34 @@ public class TaskControllerTest {
 
         assertEquals(response.getTitle(), task.getTitle());
         assertEquals(response.getId(), task.getId());
+    }
+
+    @Test
+    void testThatGetTaskThrowsNotFoundException() {
+        when(tasksRepository.getTaskById(1)).thenReturn(null);
+
+        var exception = assertThrows(
+            ResponseStatusException.class,
+            () -> sut.getTaskById(1)
+        );
+        assertEquals(exception.getStatusCode(), HttpStatus.NOT_FOUND);
+    }
+
+
+    @Test
+    void testThatGetAllTasksReturnsAllTasks() {
+        List<Task> tasks = Stream.of(
+            new Task().setId(1),
+            new Task().setId(2),
+            new Task().setId(3)
+        ).collect(Collectors.toList());
+
+        when(tasksRepository.findAll()).thenReturn(tasks);
+
+        var response = sut.getAllTasks();
+        for (int i = 0; i < response.size(); i++) {
+            assertEquals(response.get(i).getId(), tasks.get(i).getId());
+        }
     }
 
 }
