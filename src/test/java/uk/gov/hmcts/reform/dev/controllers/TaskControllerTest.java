@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -135,5 +137,22 @@ public class TaskControllerTest {
         );
         assertEquals(exception.getStatusCode(), HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    void testThatDeleteTaskDeletesTask() {
+        var task = new Task()
+            .setId(1)
+            .setTitle("Test Task")
+            .setStatus("pending");
+
+        when(tasksRepository.getTaskById(1)).thenReturn(task);
+        doNothing().when(tasksRepository).delete(task);
+
+        sut.deleteTask(1);
+
+        verify(tasksRepository).delete(task);
+    }
+
+
 
 }

@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.dev.repositories.TasksRepository;
 
 import org.springframework.data.util.StreamUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -78,6 +79,16 @@ public class TaskController {
         tasksRepository.save(task);
 
         return modelMapper.map(task, TaskResponseDto.class);
+    }
+
+    @DeleteMapping("/tasks/{id}")
+    public void deleteTask(@PathVariable("id") int id) {
+        var task = tasksRepository.getTaskById(id);
+        if (task == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        tasksRepository.delete(task);
     }
     
 }
