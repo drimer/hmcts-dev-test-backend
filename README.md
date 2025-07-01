@@ -28,3 +28,8 @@ DB_OPTIONS=
 DB_USER_NAME=testuser
 DB_PASSWORD=secretpass
 ```
+
+
+# Endpoints
+
+If you're using Postman, you can import the collection from the file `postman_collection.json`.
