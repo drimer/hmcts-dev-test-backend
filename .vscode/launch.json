@@ -17,6 +17,6 @@
                 "DB_USER_NAME": "testuser",
                 "DB_PASSWORD": "secretpass"
             },
-        }
+        },
     ]
 }
