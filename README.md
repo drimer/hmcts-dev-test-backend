@@ -22,8 +22,11 @@ docker run --name hmcts-local-postgres -e POSTGRES_DB=testdb -e POSTGRES_USER=te
 recommended approach is to make a copy of `.env.template` into `.env` and
 configure your IDE to use that file.
 
+Alternatively, you can set the environment variables in a terminal, or
+in your IDE, manually.
+
 3. The smoke tests require a full configuration to spin up a test server.
-A `.env.test` file has been provided (if you have changed your settings,
+A `.env.test` file has been provided. If you have changed your settings,
 this change will need changing with the values you used when you set up
 your DB Docker container.
 
@@ -34,6 +37,15 @@ with the following command in a terminal:
 
 ```bash
 export $(cat .env.test | xargs) && ./gradlew smoke
+```
+
+4. Except for the smoke tests, all other Gradle commands should work out
+of the box, either from your IDE, or from terminal, eg:
+
+```bash
+./gradlew build
+./gradlew test
+./gradlew run
 ```
 
 
